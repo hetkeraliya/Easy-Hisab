@@ -334,16 +334,17 @@
             const exportContainer = document.createElement('div');
             exportContainer.innerHTML = `
                 <h3 class="text-xl font-bold text-blue-600 mb-3">बैकअप डेटा कॉपी करें</h3>
-                <p class="text-sm text-gray-700 mb-2">यह आपका सारा हिसाब है। इसे कॉपी करें और सुरक्षित जगह (जैसे Google Keep) पर सेव करें।</p>
+                <p class="text-sm text-gray-700 mb-2 font-semibold text-red-500">
+                    IMPORTANT: नीचे दिए गए बॉक्स में सारा टेक्स्ट **हाथ से सेलेक्ट** करके कॉपी करें।
+                </p>
                 
                 <textarea id="backup-data-textarea" 
-                    class="w-full h-32 p-2 text-xs border rounded-lg bg-gray-50 resize-none font-mono"
+                    class="w-full h-32 p-3 text-sm border rounded-lg bg-gray-50 resize-none font-mono focus:border-red-500"
                     readonly>${data}</textarea>
                 
-                <button onclick="copyBackupData();" class="mt-3 w-full bg-green-600 text-white py-2 rounded-lg font-semibold">
-                    डेटा कॉपी करें (Copy Data)
+                <button onclick="hideMessage()" class="mt-3 w-full bg-green-600 text-white py-2 rounded-lg font-semibold">
+                    समझ गया (Close)
                 </button>
-                <button onclick="hideMessage()" class="mt-2 w-full bg-gray-400 text-white py-2 rounded-lg">बंद करें (Close)</button>
             `;
             
             document.querySelector('#message-modal button').style.display = 'none'; 
@@ -352,13 +353,6 @@
             messageModal.classList.remove('hidden');
         }
 
-        function copyBackupData() {
-            const textarea = document.getElementById('backup-data-textarea');
-            textarea.select();
-            document.execCommand('copy');
-            document.querySelector('#message-modal button').style.display = 'block'; 
-            showMessage("डेटा कॉपी हो गया है! अब आप इसे कहीं भी पेस्ट कर सकते हैं।");
-        }
 
         function importDataPrompt() {
             const importContainer = document.createElement('div');
@@ -367,7 +361,7 @@
                 <p class="text-sm text-gray-700 mb-2">कृपया अपना सेव किया हुआ डेटा यहाँ पेस्ट करें।</p>
                 
                 <textarea id="import-data-textarea" 
-                    class="w-full h-32 p-2 text-xs border rounded-lg bg-gray-50 resize-none font-mono"
+                    class="w-full h-32 p-3 text-xs border rounded-lg bg-gray-50 resize-none font-mono"
                     placeholder="यहां डेटा पेस्ट करें..."></textarea>
                 
                 <button onclick="processImport();" class="mt-3 w-full bg-blue-600 text-white py-2 rounded-lg font-semibold">
@@ -406,4 +400,15 @@
 
         // --- INITIALIZATION ---
 
-      
+        function initializeApp() {
+            loadLocalData();
+            setDefaultDate();
+            filterAndRenderTransactions();
+        }
+        
+        function setDefaultDate() {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            const dd = String(today.getDate()).padStart(2, '0');
+            const todayStr = `
